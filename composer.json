@@ -1,0 +1,20 @@
+{
+    "name": "smater/ext-container",
+    "type": "library",
+    "require-dev": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Smater\\ExtContainer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "chenxiansen",
+            "email": "15951982354@163.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
