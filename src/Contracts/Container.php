@@ -28,7 +28,7 @@ interface Container
     public function bind($abstract,$concrete = null,$share = false);
 
     //实例化
-    public function make($abstract);
+    public function make($abstract, array $parameters = []);
 
 
 

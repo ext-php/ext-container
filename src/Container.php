@@ -182,9 +182,19 @@ class Container implements ContainerContract
         //如果抽象类型已经在这个容器中被解析，我们将触发反弹侦听器，以便任何已经被解析的对象可以通过侦听器回调来更新对象的副本。
         if($this->resolved($abstract))
         {
-            //已经解析了，需要重新绑定 TODO TODO TODO
+            //已经解析了，需要重新绑定
             $this->rebound($abstract);
         }
+
+    }
+
+    //重新绑定
+    protected function rebound($abstract)
+    {
+        //实例化
+        $instance = $this->make($abstract);
+        // TODO TODO TODO
+
 
     }
 
@@ -224,10 +234,24 @@ class Container implements ContainerContract
 
     }
     //实例化对象
-    public function make($abstract)
+    public function make($abstract, array $parameters = [])
     {
-        return $this->bindings[$abstract];
+        //解析抽象类
+        return $this->resolve($abstract,$parameters);
     }
+
+    //从容器中，解析抽象类
+    protected function resolve($abstract, $parameters = [], $raiseEvents = true)
+    {
+        //获取抽象类
+        $abstract = $this->getAlias($abstract);
+        if($raiseEvents)
+        {
+            //TODO
+        }
+
+    }
+
 
     //删除已经老的绑定了的 和 别名
     protected function dropStaleInstances($abstract)
