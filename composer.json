@@ -2,11 +2,13 @@
     "name": "smater/ext-container",
     "type": "library",
     "require-dev": {
-        "php": ">=7.2"
+        "php": ">=7.2",
+        "phpunit/phpunit": "9.6.x-dev"
     },
     "autoload": {
         "psr-4": {
-            "Smater\\ExtContainer\\": "src/"
+            "Smater\\ExtContainer\\": "src/",
+            "Smater\\Tests\\": "tests/"
         }
     },
     "authors": [
@@ -15,6 +17,5 @@
             "email": "15951982354@163.com"
         }
     ],
-    "minimum-stability": "dev",
-    "require": {}
+    "minimum-stability": "dev"
 }
