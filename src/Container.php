@@ -52,8 +52,21 @@ class Container implements ContainerContract
               0 => string 'Illuminate\Auth\AuthManager' (length=27)
               1 => string 'Illuminate\Contracts\Auth\Factory' (length=33)
      */
-    //已经注册的别名，别名为下标，函数为数组，为什么这样 TODO
+    //已经注册的别名，别名为下标，函数为数组，
     protected $abstractAliases = [];
+
+    //全局解析回调
+    protected $globalBeforeResolvingCallbacks = [];
+
+    //解析函数前的回调
+    protected $beforeResolvingCallbacks = [];
+
+    //上下文绑定实例
+    public $contextual = [];
+
+    //当前实例化堆栈
+    protected $buildStack = [];
+
 
     //检测是否已经绑定
     public function bound($abstract)
@@ -244,10 +257,150 @@ class Container implements ContainerContract
     protected function resolve($abstract, $parameters = [], $raiseEvents = true)
     {
         //获取抽象类
+        /*
+        *  protected 'aliases' =>
+           array (size=75)
+             'Illuminate\Foundation\Application' => string 'app' (length=3)
+             'Illuminate\Contracts\Container\Container' => string 'app' (length=3)
+             'Illuminate\Contracts\Foundation\Application' => string 'app' (length=3)
+             'Psr\Container\ContainerInterface' => string 'app' (length=3)
+             'Illuminate\Auth\AuthManager' => string 'auth' (length=4)
+             'Illuminate\Contracts\Auth\Factory' => string 'auth' (length=4)
+             'Illuminate\Contracts\Auth\Guard' => string 'auth.driver' (length=11)
+        */
         $abstract = $this->getAlias($abstract);
+        //$abstract = app
+
         if($raiseEvents)
         {
-            //TODO
+            $this->fireBeforeResolvingCallbacks($abstract, $parameters);
+        }
+
+        //$abstract = app 处理和 app相关的 实例
+        $concrete = $this->getContextualConcrete($abstract);
+
+
+    }
+
+    //获取实例
+    //$abstract = app 这种
+    protected function getContextualConcrete($abstract)
+    {
+
+        //判断当前正在解析的实例有没有上下文正在进行
+        if(! is_null($binding = $this->findInContextualBindings($abstract)))
+        {
+            return $binding;
+        }
+
+        //如果上下文都没有了
+        /*
+        *  protected 'abstractAliases' =>
+           array (size=39)
+             'app' =>
+               array (size=4)
+                 0 => string 'Illuminate\Foundation\Application' (length=33)
+                 1 => string 'Illuminate\Contracts\Container\Container' (length=40)
+                 2 => string 'Illuminate\Contracts\Foundation\Application' (length=43)
+                 3 => string 'Psr\Container\ContainerInterface' (length=32)
+             'auth' =>
+               array (size=2)
+                 0 => string 'Illuminate\Auth\AuthManager' (length=27)
+                 1 => string 'Illuminate\Contracts\Auth\Factory' (length=33)
+        */
+        if(empty($this->abstractAliases[$abstract]))
+        {
+            //依赖解析完成
+            return;
+        }
+
+        //还存在依赖关系
+        foreach ($this->abstractAliases[$abstract] as $alias)
+        {
+            if(! is_null($binding = $this->findInContextualBindings($alias)))
+            {
+                return $binding;
+            }
+        }
+
+
+    }
+
+    //查询上下文绑定数组
+    protected function findInContextualBindings($abstract)
+    {
+        return $this->contextual[end($this->buildStack)][$abstract] ?? null;
+    }
+
+    //解耦解析前的依赖
+    protected function fireBeforeResolvingCallbacks($abstract,$parameters = [])
+    {
+        //$abstract = app
+        $this->fireBeforeCallbackArray($abstract,$parameters,$this->globalBeforeResolvingCallbacks);
+
+        foreach ($this->beforeResolvingCallbacks as $type => $callbacks)
+        {
+            if ($type === $abstract || is_subclass_of($abstract, $type))
+            {
+                $this->fireBeforeCallbackArray($abstract, $parameters, $callbacks);
+            }
+        }
+
+    }
+
+    //待研究 TODO
+    protected function fireBeforeCallbackArray($abstract, $parameters, array $callbacks)
+    {
+        foreach ($callbacks as $callback)
+        {
+            $callback($abstract,$parameters,$this);
+        }
+
+    }
+
+    //解析注册前的依赖
+    /*
+       class MyServiceProvider extends ServiceProvider
+       {
+           public function register()
+           {
+               $this->app->beforeResolving('myService', function ($app, $params) {
+                   // 在解析 myService 实例之前，在容器中注册一个名为 myDependency 的依赖项
+                   $app->instance('myDependency', new MyDependency());
+                   return $params;
+               });
+
+               $this->app->bind('myService', function ($app) {
+                   $dependency = $app->make('myDependency');
+                   // 创建 myService 实例，并将 myDependency 注入到服务中
+                   return new MyService($dependency);
+               });
+           }
+       }
+       在上述示例中，我们使用 beforeResolving() 方法注册了一个回调函数，用于在解析 myService 实例之前，向容器中注册名为 myDependency 的依赖项。这样，在解析 myService 实例时，就可以自动注入这个依赖项了。
+       需要注意的是，beforeResolving() 方法只会在 $app->make() 或 $app->resolve() 方法解析实例时触发，如果直接使用实例化的方式，则不会触发 beforeResolving() 方法中注册的回调函数。
+    */
+    public function beforeResolving($abstract, Closure $callback = null)
+    {
+        /*
+         * protected 'aliases' =>
+            array (size=75)
+              'Illuminate\Foundation\Application' => string 'app' (length=3)
+              'Illuminate\Contracts\Container\Container' => string 'app' (length=3)
+              'Illuminate\Contracts\Foundation\Application' => string 'app' (length=3)
+              'Psr\Container\ContainerInterface' => string 'app' (length=3)
+         */
+        if(isset($abstract))
+        {
+            $abstract = $this->getAlias($abstract);
+        }
+        //如果别名是闭包函数
+        if($abstract instanceof  Closure && is_null($callback))
+        {
+            $this->globalBeforeResolvingCallbacks[] = $abstract;
+        }else{
+            //写入解析回调数组
+            $this->beforeResolvingCallbacks[$abstract][] = $callback;
         }
 
     }

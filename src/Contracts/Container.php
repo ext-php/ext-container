@@ -7,7 +7,7 @@
  */
 
 namespace Smater\ExtContainer\Contracts;
-
+use Closure;
 
 interface Container
 {
@@ -29,6 +29,29 @@ interface Container
 
     //实例化
     public function make($abstract, array $parameters = []);
+
+    /*
+        class MyServiceProvider extends ServiceProvider
+        {
+            public function register()
+            {
+                $this->app->beforeResolving('myService', function ($app, $params) {
+                    // 在解析 myService 实例之前，在容器中注册一个名为 myDependency 的依赖项
+                    $app->instance('myDependency', new MyDependency());
+                    return $params;
+                });
+
+                $this->app->bind('myService', function ($app) {
+                    $dependency = $app->make('myDependency');
+                    // 创建 myService 实例，并将 myDependency 注入到服务中
+                    return new MyService($dependency);
+                });
+            }
+        }
+        在上述示例中，我们使用 beforeResolving() 方法注册了一个回调函数，用于在解析 myService 实例之前，向容器中注册名为 myDependency 的依赖项。这样，在解析 myService 实例时，就可以自动注入这个依赖项了。
+        需要注意的是，beforeResolving() 方法只会在 $app->make() 或 $app->resolve() 方法解析实例时触发，如果直接使用实例化的方式，则不会触发 beforeResolving() 方法中注册的回调函数。
+     */
+    public function beforeResolving($abstract, Closure $callback = null);
 
 
 
