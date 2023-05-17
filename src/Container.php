@@ -104,13 +104,13 @@ class Container implements ContainerContract
     //打标签
     public function tag($abstracts, $tags)
     {
-        // TODO: Implement tag() method.
+        //
     }
 
     //解析标签
     public function tagged($tag)
     {
-        // TODO: Implement tagged() method.
+        //
     }
 
 
@@ -236,12 +236,12 @@ class Container implements ContainerContract
         return function ($container,$parameters = []) use($abstract,$concrete){
           if($abstract == $concrete)
           {
-              //$this->app->bind('HelpSpot\API', null); 这种形式 TODO build方法待研究
+              //$this->app->bind('HelpSpot\API', null); 这种形式 build方法待研究 TODO
               return $container->build($concrete);
           }
             //剩下这种形式，$this->app->bind('Illuminate\Tests\Container\IContainerContractStub', 'Illuminate\Tests\Container\ContainerImplementationStub');
-            //TODO resolve方法待研究 $raiseEvents = false 这个参数待研究
-            return $container->resolve($concrete,$parameters,$raiseEvents = false);
+            //resolve方法待研究 $raiseEvents = false 这个参数待研究 TODO
+           return $container->resolve($concrete,$parameters,$raiseEvents = false);
 
         };
 
@@ -276,7 +276,7 @@ class Container implements ContainerContract
             $this->fireBeforeResolvingCallbacks($abstract, $parameters);
         }
 
-        //$abstract = app 处理和 app相关的 实例
+        //$abstract = app 处理和 app相关的 实例 TODO TODO TODO
         $concrete = $this->getContextualConcrete($abstract);
 
 
@@ -287,7 +287,7 @@ class Container implements ContainerContract
     protected function getContextualConcrete($abstract)
     {
 
-        //判断当前正在解析的实例有没有上下文正在进行
+        //判断当前正在解析的实例有没有上下文正在进行编译
         if(! is_null($binding = $this->findInContextualBindings($abstract)))
         {
             return $binding;
@@ -308,13 +308,14 @@ class Container implements ContainerContract
                  0 => string 'Illuminate\Auth\AuthManager' (length=27)
                  1 => string 'Illuminate\Contracts\Auth\Factory' (length=33)
         */
+        //判断abstractAliases数据有没有数据，如果没有则编译完了，
         if(empty($this->abstractAliases[$abstract]))
         {
             //依赖解析完成
             return;
         }
 
-        //还存在依赖关系
+        //abstractAliases还有依赖没有解析完成
         foreach ($this->abstractAliases[$abstract] as $alias)
         {
             if(! is_null($binding = $this->findInContextualBindings($alias)))
@@ -322,7 +323,6 @@ class Container implements ContainerContract
                 return $binding;
             }
         }
-
 
     }
 
@@ -348,7 +348,7 @@ class Container implements ContainerContract
 
     }
 
-    //待研究 TODO
+    //待研究
     protected function fireBeforeCallbackArray($abstract, $parameters, array $callbacks)
     {
         foreach ($callbacks as $callback)
