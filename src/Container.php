@@ -11,6 +11,10 @@ namespace Smater\ExtContainer;
 
 use Smater\ExtContainer\Contracts\Container as ContainerContract;
 use Closure;
+use ReflectionClass;
+use Exception;
+use ReflectionType;
+use ReflectionParameter;
 
 class Container implements ContainerContract
 {
@@ -67,7 +71,11 @@ class Container implements ContainerContract
     //当前实例化堆栈
     protected $buildStack = [];
 
+    //参数覆盖堆栈
+    protected $with = [];
 
+    //拓展闭包
+    protected $extenders = [];
     //检测是否已经绑定
     public function bound($abstract)
     {
@@ -271,15 +279,331 @@ class Container implements ContainerContract
         $abstract = $this->getAlias($abstract);
         //$abstract = app
 
+        //触发解析前回调
         if($raiseEvents)
         {
             $this->fireBeforeResolvingCallbacks($abstract, $parameters);
         }
 
-        //$abstract = app 处理和 app相关的 实例 TODO TODO TODO
+        //$abstract = app 处理和 app相关的
         $concrete = $this->getContextualConcrete($abstract);
+        //abstractAliases 数组还有未编译的依赖，或者参数不为空
+        $needsContextualBuild = ! empty($parameters) || ! is_null($concrete);
+        /*
+        * 如果该类型的实例当前作为单例进行管理，我们将只是返回一个现有的实例，而不是实例化新的实例，因此，开发人员可以每次都使用相同的对象实例。
+        */
+        //没有上下文依赖，并且instances里面已经有该实例，则直接返回
+        if(isset($this->instances[$abstract]) && ! $needsContextualBuild)
+        {
+            return $this->instances[$abstract];
+        }
+        //参数依赖压如堆栈
+        $this->with[] = $parameters;
+        //concrete 是 null
+        if(is_null($concrete))
+        {
+            $concrete = $this->getConcrete($abstract);
+        }
+        /*
+         * 我们已经准备好实例化所注册的具体类型的实例绑定。这将实例化类型，并解析任何类型，递归地“嵌套”依赖项，直到所有依赖项都得到解决。
+         */
+        if($this->isBuildable($concrete,$abstract))
+        {
+            //能构建
+            $object = $this->build($concrete);
+        }else{
+            //否则递归编译make
+            $object = $this->make($concrete);
+        }
+
+        //判断该类有没有拓展
+        foreach ($this->getExtenders($abstract) as $extender)
+        {
+            $object = $extender($object, $this);
+        }
+
+        /*
+         * 如果请求的类型被注册为单例类型，我们将需要关闭缓存实例在“内存”中，这样我们就可以稍后返回它，而不必创建一个对象在每次后续请求时的全新实例。
+         */
+        if($this->isShared($abstract) && ! $needsContextualBuild)
+        {
+            $this->instances[$abstract] = $object;
+        }
+
+        //解析中回调
+        if($raiseEvents)
+        {
+            $this->fireResolvingCallbacks($abstract,$object);
+        }
+
+        $this->resolved[$abstract] = true;
+
+        array_pop($this->with);
+
+        return $object;
+
+    }
+
+    //解析中的回调
+    protected function fireResolvingCallbacks($abstract, $object)
+    {
+        //TODO
+    }
 
 
+    //检测是否是单例
+    protected function isShared($abstract)
+    {
+        return isset($this->instances[$abstract]) || (isset($this->bindings[$abstract]["shared"]) && $this->bindings[$abstract]["shared"] == true);
+
+    }
+
+
+    //获取拓展
+    protected function getExtenders($abstract)
+    {
+        return $this->extenders[$this->getAlias($abstract)] ?? [];
+    }
+
+    //构建实例化
+    public function build($concrete)
+    {
+        //如果是闭包函数
+        if($concrete instanceof Closure)
+        {
+            //如果要解析的依赖项是可调用的闭包函数（Closure），则调用闭包函数传入当前实例对象和最后一个参数覆盖值，生成相应的依赖项并返回。
+            return $concrete($this,$this->getLastParameterOverride());
+        }
+
+        //不是闭包
+        try{
+            //反射构建函数
+            $reflector = new ReflectionClass($concrete);
+        }catch (Exception $e)
+        {
+            throw new Exception("Target class [$concrete] does not exist.");
+        }
+
+        //判断能否实例化
+        if(! $reflector->isInstantiable())
+        {
+            //不能实例化，包含私有的构造函数等
+            return $this->notInstantiable($concrete);
+        }
+        //可以实例化，写入堆栈
+        $this->buildStack[] = $concrete;
+        //获取构造函数
+        $constructor = $reflector->getConstructor();
+        //构造函数为空，则没有其他多余的依赖关系，可以直接返回实例对象
+        if(is_null($constructor))
+        {
+            array_pop($this->buildStack);
+
+            return new $concrete;
+        }
+
+        //获取依赖参数
+        $dependencies = $constructor->getParameters();
+
+        try{
+
+            $instances = $this->resolveDependencies($dependencies);
+        }catch (Exception $e)
+        {
+            array_pop($this->buildStack);
+
+            throw $e;
+        }
+
+        array_pop($this->buildStack);
+        //构建对象实例
+        return $reflector->newInstanceArgs($instances);
+
+    }
+
+    //解析构造函数的依赖关系
+    protected function resolveDependencies(array $dependencies)
+    {
+        $results = [];
+
+        foreach ($dependencies as $dependency)
+        {
+            /*
+             * 如果依赖项对这个特定的构建有覆盖，我们将使用而不是作为值。否则，我们将继续运行,并让反射来决定结果。
+             */
+            // TODO 待理解
+            if ($this->hasParameterOverride($dependency)) {
+                $results[] = $this->getParameterOverride($dependency);
+
+                continue;
+            }
+
+            /*
+            * 如果类为空，则意味着依赖项是字符串或其他类型，私有类型，我们无法解析，因为它不是类和因为我们没有地方可去，所以我们只会出现一个错误。
+            */
+            //TODO TODO TODO 待理解
+            $result = is_null(Util::getParameterClassName($dependency)) ? $this->resolvePrimitive($dependency) : $this->resolveClass($dependency);
+            //包含 ...$args 参数
+            if ($dependency->isVariadic()) {
+                $results = array_merge($results, $result);
+            } else {
+                $results[] = $result;
+            }
+
+        }
+
+        return $results;
+
+    }
+
+    //解析参数类
+    protected function resolveClass(ReflectionParameter $parameter)
+    {
+        try{
+            return $parameter->isVariadic()?$this->resolveVariadicClass($parameter):$this->make(Util::getParameterClassName());
+
+        }catch (Exception $e)
+        {
+            if($parameter->isDefaultValueAvailable())
+            {
+                array_pop($this->with);
+
+                return $parameter->getDefaultValue();
+            }
+
+            if($parameter->isVariadic())
+            {
+                array_pop($this->with);
+
+                return [];
+            }
+
+            throw $e;
+        }
+
+    }
+
+    //解析 ...参数类
+    protected function resolveVariadicClass(ReflectionParameter $parameter)
+    {
+        $className = Util::getParameterClassName($parameter);
+
+        $abstract = $this->getAlias($className);
+
+        if (! is_array($concrete = $this->getContextualConcrete($abstract))) {
+            return $this->make($className);
+        }
+
+        return array_map(function ($abstract) {
+            return $this->resolve($abstract);
+        }, $concrete);
+
+    }
+
+
+    //解析非类暗示的原语依赖。
+    protected function resolvePrimitive(ReflectionParameter $parameter)
+    {
+        //判断依赖是否在上下文里
+        if(! is_null($concrete = $this->getContextualConcrete('$'.$parameter->getName())))
+        {
+            return Util::unwrapIfClosure($concrete, $this);
+        }
+
+        //获取默认值
+        if($parameter->isDefaultValueAvailable())
+        {
+            return $parameter->getDefaultValue();
+        }
+
+        //如果是 ...$args 这种的
+        if($parameter->isVariadic())
+        {
+            return [];
+        }
+
+        $this->unresolvablePrimitive($parameter);
+
+    }
+
+    //不可解析的
+    protected function unresolvablePrimitive(ReflectionParameter $parameter)
+    {
+        $message = "Unresolvable dependency resolving [$parameter] in class {$parameter->getDeclaringClass()->getName()}";
+
+        throw new Exception($message);
+    }
+
+
+    protected function getParameterOverride($dependency)
+    {
+        return $this->getLastParameterOverride()[$dependency->name];
+    }
+
+
+    protected function hasParameterOverride($dependency)
+    {
+        return array_key_exists(
+            $dependency->name, $this->getLastParameterOverride()
+        );
+    }
+
+    protected function getLastParameterOverride()
+    {
+        return count($this->with) ? end($this->with) : [];
+    }
+
+    //不能实例化
+    protected function notInstantiable($concrete)
+    {
+        //构建堆栈不为空
+        if(! empty($this->buildStack))
+        {
+            $previous = implode(', ', $this->buildStack);
+
+            $message = "Target [$concrete] is not instantiable while building [$previous].";
+        }else{
+            $message = "Target [$concrete] is not instantiable.";
+        }
+
+        throw new Exception("$message");
+    }
+
+
+    //判断能否构建
+    protected function isBuildable($abstract,$concrete)
+    {
+        return $concrete === $abstract || $concrete instanceof Closure;
+
+    }
+
+    //获取具体类
+    protected function getConcrete($abstract)
+    {
+        /*
+         * 如果没有为类型注册的解析器或具体类型，我们将假设每个类型都是一个具体名称，并尝试按原样解析它，因为容器应该能够自动解析具体类型。
+         * protected 'bindings' =>
+            array (size=69)
+              'Illuminate\Foundation\Mix' =>
+                array (size=2)
+                  'concrete' =>
+                    object(Closure)[2]
+                      ...
+                  'shared' => boolean true
+              'Illuminate\Foundation\PackageManifest' =>
+                array (size=2)
+                  'concrete' =>
+                    object(Closure)[4]
+                      ...
+                  'shared' => boolean true
+         */
+        //存在则返回具体类
+        if(isset($this->bindings[$abstract]))
+        {
+            return $this->bindings[$abstract]["concrete"];
+        }
+        //不存在则返回原有类
+        return $abstract;
     }
 
     //获取实例
