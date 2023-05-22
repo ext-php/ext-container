@@ -53,10 +53,14 @@ interface Container
      */
     public function beforeResolving($abstract, Closure $callback = null);
 
+    //注册一个正在解析的回调函数
+    public function resolving($abstract, Closure $callback = null);
 
+    //注册一个解析之后的回调函数
+    public function afterResolving($abstract, Closure $callback = null);
 
-
-
+    //检测函数是否已经解析过了
+    public function resolved($abstract);
 
 
 
