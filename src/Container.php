@@ -76,6 +76,19 @@ class Container implements ContainerContract
 
     //拓展闭包
     protected $extenders = [];
+
+    //全局解析回调
+    protected $globalResolvingCallbacks = [];
+
+    //全局解析后的callback
+    protected $globalAfterResolvingCallbacks = [];
+
+    //根据类的类型解析callback
+    protected $resolvingCallbacks = [];
+
+    //解析后的回调类型
+    protected $afterResolvingCallbacks = [];
+
     //检测是否已经绑定
     public function bound($abstract)
     {
@@ -347,9 +360,44 @@ class Container implements ContainerContract
     //解析中的回调
     protected function fireResolvingCallbacks($abstract, $object)
     {
-        //TODO
+        $this->fireCallbackArray($object, $this->globalResolvingCallbacks);
+
+        $this->fireCallbackArray(
+            $object, $this->getCallbacksForType($abstract, $object, $this->resolvingCallbacks)
+        );
+
+        $this->fireAfterResolvingCallbacks($abstract, $object);
     }
 
+    protected function fireCallbackArray($object, array $callbacks)
+    {
+        foreach ($callbacks as $callback) {
+            $callback($object, $this);
+        }
+    }
+
+    protected function getCallbacksForType($abstract, $object, array $callbacksPerType)
+    {
+        $results = [];
+
+        foreach ($callbacksPerType as $type => $callbacks) {
+            if ($type === $abstract || $object instanceof $type) {
+                $results = array_merge($results, $callbacks);
+            }
+        }
+
+        return $results;
+    }
+
+    //解析
+    protected function fireAfterResolvingCallbacks($abstract, $object)
+    {
+        $this->fireCallbackArray($object, $this->globalAfterResolvingCallbacks);
+
+        $this->fireCallbackArray(
+            $object, $this->getCallbacksForType($abstract, $object, $this->afterResolvingCallbacks)
+        );
+    }
 
     //检测是否是单例
     protected function isShared($abstract)
