@@ -149,7 +149,7 @@ class Container implements ContainerContract
         3. 绑定接口和实现
         $this->app->bind('Illuminate\Tests\Container\IContainerContractStub', 'Illuminate\Tests\Container\ContainerImplementationStub');
      */
-    public function bind($abstract,$concrete = null,$share = false)
+    public function bind($abstract,$concrete = null,$shared = false)
     {
         //绑定之前，先销毁已经绑定了的实例，别名，
         $this->dropStaleInstances($abstract);
@@ -233,7 +233,7 @@ class Container implements ContainerContract
     }
 
     //检测抽象类型是否被绑定
-    protected function resolved($abstract)
+    public function resolved($abstract)
     {
         //判断别名有没有，有的话转换成别名，
         if($this->isAlias($abstract))
@@ -241,7 +241,7 @@ class Container implements ContainerContract
             $abstract = $this->getAlias($abstract);
         }
         //查询解析数组，和 实例数组
-        return isset($this->resolved[$abstract]) || $this->instances[$abstract];
+        return isset($this->resolved[$abstract]) || isset($this->instances[$abstract]);
 
     }
 
@@ -730,6 +730,20 @@ class Container implements ContainerContract
 
     }
 
+    //
+    public function resolving($abstract, Closure $callback = null)
+    {
+        if (is_string($abstract)) {
+            $abstract = $this->getAlias($abstract);
+        }
+
+        if (is_null($callback) && $abstract instanceof Closure) {
+            $this->globalResolvingCallbacks[] = $abstract;
+        } else {
+            $this->resolvingCallbacks[$abstract][] = $callback;
+        }
+    }
+
     //解析注册前的依赖
     /*
        class MyServiceProvider extends ServiceProvider
@@ -777,6 +791,18 @@ class Container implements ContainerContract
 
     }
 
+    public function afterResolving($abstract, Closure $callback = null)
+    {
+        if (is_string($abstract)) {
+            $abstract = $this->getAlias($abstract);
+        }
+
+        if ($abstract instanceof Closure && is_null($callback)) {
+            $this->globalAfterResolvingCallbacks[] = $abstract;
+        } else {
+            $this->afterResolvingCallbacks[$abstract][] = $callback;
+        }
+    }
 
     //删除已经老的绑定了的 和 别名
     protected function dropStaleInstances($abstract)
@@ -786,11 +812,13 @@ class Container implements ContainerContract
 
     public function get(string $id)
     {
+        print_r("222");
         // TODO: Implement get() method.
     }
 
     public function has(string $id): bool
     {
+        print_r("444");
         // TODO: Implement has() method.
     }
 }
