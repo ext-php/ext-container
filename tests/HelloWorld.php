@@ -18,6 +18,6 @@ class HelloWorld
 
     public function login()
     {
-        echo "3432423";
+        var_dump("3432423");
     }
 }

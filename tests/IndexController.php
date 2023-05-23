@@ -35,20 +35,22 @@ class IndexController
 $c = new Container();
 $t = new IndexController($c);
 
-$i_test = new InstanceTest();
-$tmp =  $t->getApp()->instance('in_test',$i_test);
-$tmp = $t->getApp()->get('in_test');
-$tmp->index();exit;
-
-var_dump();exit;
+//$i_test = new InstanceTest();
+//$tmp =  $t->getApp()->instance('in_test',$i_test);
+//$t->getApp()->get('in_test')->index();exit;
+//
+//var_dump();exit;
 
 
 //绑定
+//$t->getApp()->bind("Smater\Tests\HelloWorld",null);
 $t->getApp()->alias('Smater\Tests\HelloWorld', 'HelloWorld');
 print_r($t->getApp());
 //解析
 $hello = $t->getApp()->make('HelloWorld');
-var_dump($hello->login());exit;
+$hello->index();exit;
+
+var_dump();exit;
 
 //2.绑定闭包.闭包直接提供类实现方式
 //$this->app->bind('HelpSpot\API', function () {

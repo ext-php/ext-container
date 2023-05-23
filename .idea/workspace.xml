@@ -2,14 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e86a2f92-e6dd-4702-a485-6bf480a36e02" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/src/CircularDependencyException.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/ContainerExceptionInterface.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/EntryNotFoundException.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/NotFoundExceptionInterface.php" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/tests/InstanceTest.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Container.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Container.php" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Contracts/Container.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Contracts/Container.php" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/HelloWorld.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/HelloWorld.php" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/IndexController.php" beforeDir="false" afterPath="$PROJECT_DIR$/tests/IndexController.php" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -26,8 +19,29 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/IndexController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="551">
-              <caret line="42" column="16" lean-forward="true" selection-start-line="42" selection-start-column="16" selection-end-line="42" selection-end-column="16" />
+            <state relative-caret-position="399">
+              <caret line="50" column="13" selection-start-line="50" selection-start-column="13" selection-end-line="50" selection-end-column="13" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/HelloWorld.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="285">
+              <caret line="20" column="28" lean-forward="true" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Container.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="97">
+              <caret line="262" column="35" selection-start-line="262" selection-start-column="28" selection-end-line="262" selection-end-column="35" />
+              <folding>
+                <element signature="e#147#212#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -54,11 +68,11 @@
       <find>afterResolving(</find>
       <find>resolved</find>
       <find>resolving(</find>
-      <find>make</find>
       <find>alias(</find>
       <find>alias(</find>
       <find>instance(</find>
       <find>get</find>
+      <find>make</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -78,7 +92,6 @@
         <option value="$PROJECT_DIR$/tests/ReflecClass.php" />
         <option value="$PROJECT_DIR$/tests/ReflectClass.php" />
         <option value="$PROJECT_DIR$/src/Util.php" />
-        <option value="$PROJECT_DIR$/tests/HelloWorld.php" />
         <option value="$PROJECT_DIR$/src/Contracts/Container.php" />
         <option value="$PROJECT_DIR$/src/ContainerExceptionInterface.php" />
         <option value="$PROJECT_DIR$/src/CircularDependencyException.php" />
@@ -86,6 +99,7 @@
         <option value="$PROJECT_DIR$/src/NotFoundExceptionInterface.php" />
         <option value="$PROJECT_DIR$/src/Container.php" />
         <option value="$PROJECT_DIR$/tests/InstanceTest.php" />
+        <option value="$PROJECT_DIR$/tests/HelloWorld.php" />
         <option value="$PROJECT_DIR$/tests/IndexController.php" />
       </list>
     </option>
@@ -145,6 +159,11 @@
             <path>
               <item name="ext-container" type="b2602c69:ProjectViewProjectNode" />
               <item name="ext-container" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ext-container" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ext-container" type="462c0819:PsiDirectoryNode" />
               <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
@@ -194,12 +213,12 @@
       <workItem from="1683598974291" duration="984000" />
       <workItem from="1683794762935" duration="1500000" />
       <workItem from="1684116036929" duration="38042000" />
-      <workItem from="1684721253254" duration="10961000" />
+      <workItem from="1684721253254" duration="12338000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="51487000" />
+    <option name="totallyTimeSpent" value="52864000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -304,13 +323,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/HelloWorld.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="20" column="23" selection-start-line="20" selection-start-column="23" selection-end-line="20" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Contracts/Container.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="361">
@@ -346,16 +358,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Container.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="463">
-          <caret line="941" column="33" lean-forward="true" selection-start-line="941" selection-start-column="33" selection-end-line="941" selection-end-column="33" />
-          <folding>
-            <element signature="e#147#212#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/InstanceTest.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="228">
@@ -363,10 +365,27 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Container.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="97">
+          <caret line="262" column="35" selection-start-line="262" selection-start-column="28" selection-end-line="262" selection-end-column="35" />
+          <folding>
+            <element signature="e#147#212#0#PHP" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/HelloWorld.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="20" column="28" lean-forward="true" selection-start-line="20" selection-start-column="28" selection-end-line="20" selection-end-column="28" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/IndexController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="551">
-          <caret line="42" column="16" lean-forward="true" selection-start-line="42" selection-start-column="16" selection-end-line="42" selection-end-column="16" />
+        <state relative-caret-position="399">
+          <caret line="50" column="13" selection-start-line="50" selection-start-column="13" selection-end-line="50" selection-end-column="13" />
         </state>
       </provider>
     </entry>
