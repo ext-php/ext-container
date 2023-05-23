@@ -279,6 +279,14 @@ class Container implements ContainerContract
         };
 
     }
+
+    //注册单例共享实例
+    public function singleton($abstract,$concrete)
+    {
+
+        $this->bind($abstract,$concrete,true);
+    }
+
     //实例化对象
     public function make($abstract, array $parameters = [])
     {

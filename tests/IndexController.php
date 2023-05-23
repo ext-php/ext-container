@@ -50,8 +50,6 @@ print_r($t->getApp());
 $hello = $t->getApp()->make('HelloWorld');
 $hello->index();exit;
 
-var_dump();exit;
-
 //2.绑定闭包.闭包直接提供类实现方式
 //$this->app->bind('HelpSpot\API', function () {
 //    return new HelpSpot\API();
