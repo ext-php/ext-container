@@ -32,10 +32,17 @@ class IndexController
 
 }
 
-
-
 $c = new Container();
 $t = new IndexController($c);
+
+$i_test = new InstanceTest();
+$tmp =  $t->getApp()->instance('in_test',$i_test);
+$tmp = $t->getApp()->get('in_test');
+$tmp->index();exit;
+
+var_dump();exit;
+
+
 //绑定
 $t->getApp()->alias('Smater\Tests\HelloWorld', 'HelloWorld');
 print_r($t->getApp());

@@ -62,7 +62,8 @@ interface Container
     //检测函数是否已经解析过了
     public function resolved($abstract);
 
-
+    //注册一个共享的实例到容器
+    public function instance($abstract, $instance);
 
 
 

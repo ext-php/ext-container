@@ -89,6 +89,9 @@ class Container implements ContainerContract
     //解析后的回调类型
     protected $afterResolvingCallbacks = [];
 
+    //重新绑定的回调
+    protected $reboundCallbacks = [];
+
     //检测是否已经绑定
     public function bound($abstract)
     {
@@ -227,10 +230,19 @@ class Container implements ContainerContract
     {
         //实例化
         $instance = $this->make($abstract);
-        // TODO TODO TODO
 
+        foreach ($this->getReboundCallbacks($abstract) as $callback)
+        {
+            $callback($this,$instance);
+        }
 
     }
+
+    protected function getReboundCallbacks($abstract)
+    {
+        return $this->reboundCallbacks[$abstract] ?? [];
+    }
+
 
     //检测抽象类型是否被绑定
     public function resolved($abstract)
@@ -810,15 +822,124 @@ class Container implements ContainerContract
         unset($this->bindings[$abstract],$this->aliases[$abstract]);
     }
 
-    public function get(string $id)
+    /*
+     * protected 'instances' =>
+            array (size=40)
+              'path' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\app' (length=49)
+              'path.base' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel' (length=45)
+              'path.config' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\config' (length=52)
+              'path.public' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\public' (length=52)
+              'path.storage' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\storage' (length=53)
+              'path.database' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\database' (length=54)
+              'path.resources' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\resources' (length=55)
+              'path.bootstrap' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\bootstrap' (length=55)
+              'path.lang' => string 'D:\phpstudy_pro\WWW\My_Extensions\testlaravel\lang' (length=50)
+              'app' =>
+                &object(Illuminate\Foundation\Application)[3]
+              'Illuminate\Container\Container' =>
+                &object(Illuminate\Foundation\Application)[3]
+              'events' =>
+                object(Illuminate\Events\Dispatcher)[27]
+                  protected 'container' =>
+                    &object(Illuminate\Foundation\Application)[3]
+                  protected 'listeners' =>
+                    array (size=7)
+                      ...
+                  protected 'wildcards' =>
+                    array (size=0)
+                      ...
+                  protected 'wildcardsCache' =>
+                    array (size=15)
+                      ...
+                  protected 'queueResolver' =>
+                    object(Closure)[28]
+                      ...
+     */
+    //注册一个共享的实例到容器
+    public function instance($abstract, $instance)
     {
-        print_r("222");
-        // TODO: Implement get() method.
+        //清除抽象类别名
+        $this->removeAbstractAlias($abstract);
+
+        //判断是否绑定
+        $isbound = $this->bound($abstract);
+
+        //清除别名组
+        unset($this->aliases[$abstract]);
+
+        $this->instances[$abstract] = $instance;
+        //我们将检查以确定此类型之前是否绑定过，以及是否绑定过 我们将触发与容器及其注册的反弹回调 可以用这里已经解决的消费类来更新。
+        if($isbound)
+        {
+            $this->rebound($abstract);
+        }
+
+        return $instance;
+
+
     }
 
+    //清除抽象类别名
+    protected function removeAbstractAlias($abstract)
+    {
+        //如果别名没有，那后面的别名组也没有数据
+        if(! isset($this->aliases[$abstract]))
+        {
+            return;
+        }
+        /*
+         * protected 'abstractAliases' =>
+            array (size=40)
+              'app' =>
+                array (size=4)
+                  0 => string 'Illuminate\Foundation\Application' (length=33)
+                  1 => string 'Illuminate\Contracts\Container\Container' (length=40)
+                  2 => string 'Illuminate\Contracts\Foundation\Application' (length=43)
+                  3 => string 'Psr\Container\ContainerInterface' (length=32)
+              'auth' =>
+                array (size=2)
+                  0 => string 'Illuminate\Auth\AuthManager' (length=27)
+                  1 => string 'Illuminate\Contracts\Auth\Factory' (length=33)
+              'auth.driver' =>
+                array (size=1)
+                  0 => string 'Illuminate\Contracts\Auth\Guard' (length=31)
+         */
+        foreach ($this->abstractAliases as $ab => $aliases)
+        {
+            foreach ($aliases as $k =>$alias)
+            {
+                if($alias == $abstract)
+                {
+                    unset($this->abstractAliases[$ab][$k]);
+                }
+
+            }
+        }
+
+
+    }
+
+    //获取实例，如 instances里面的实例
+    public function get(string $id)
+    {
+       try{
+           return $this->resolve($id);
+       }catch (Exception $e)
+       {
+            if($this->has($id) || $e instanceof CircularDependencyException)
+            {
+                throw $e;
+            }
+
+           throw new EntryNotFoundException($id, is_int($e->getCode()) ? $e->getCode() : 0, $e);
+
+       }
+    }
+
+    //判断是否包含
     public function has(string $id): bool
     {
-        print_r("444");
-        // TODO: Implement has() method.
+        return $this->bound($id);
+
     }
 }
