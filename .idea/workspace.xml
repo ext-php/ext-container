@@ -2,10 +2,13 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="e86a2f92-e6dd-4702-a485-6bf480a36e02" name="Default Changelist" comment="">
+<<<<<<< HEAD
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Container.php" beforeDir="false" afterPath="$PROJECT_DIR$/src/Container.php" afterDir="false" />
+=======
+      <change beforePath="$PROJECT_DIR$/.idea/ext-container.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/ext-container.iml" afterDir="false" />
+>>>>>>> cd53ca813632c99b560df4880140e2e54685cc46
     </list>
-    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -13,6 +16,7 @@
   </component>
   <component name="ComposerSettings" doNotAsk="true" synchronizationState="SYNCHRONIZE">
     <pharConfigPath>$PROJECT_DIR$/composer.json</pharConfigPath>
+<<<<<<< HEAD
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
@@ -38,6 +42,9 @@
         </entry>
       </file>
     </leaf>
+=======
+    <execution />
+>>>>>>> cd53ca813632c99b560df4880140e2e54685cc46
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
@@ -61,32 +68,6 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
-  </component>
-  <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/composer.json" />
-        <option value="$PROJECT_DIR$/src/Test.php" />
-        <option value="$PROJECT_DIR$/src/Contracts/ContainerContract.php" />
-        <option value="$PROJECT_DIR$/src/Contracts/ContainerContrac.php" />
-        <option value="$PROJECT_DIR$/tests/ReflectionIndex.php" />
-        <option value="$PROJECT_DIR$/tests/SimpleClass.php" />
-        <option value="$PROJECT_DIR$/src/ReflecClass.php" />
-        <option value="$PROJECT_DIR$/tests/ReflectTestClass.php" />
-        <option value="$PROJECT_DIR$/tests/ReflecClass.php" />
-        <option value="$PROJECT_DIR$/tests/ReflectClass.php" />
-        <option value="$PROJECT_DIR$/src/Util.php" />
-        <option value="$PROJECT_DIR$/src/Contracts/Container.php" />
-        <option value="$PROJECT_DIR$/src/ContainerExceptionInterface.php" />
-        <option value="$PROJECT_DIR$/src/CircularDependencyException.php" />
-        <option value="$PROJECT_DIR$/src/EntryNotFoundException.php" />
-        <option value="$PROJECT_DIR$/src/NotFoundExceptionInterface.php" />
-        <option value="$PROJECT_DIR$/tests/InstanceTest.php" />
-        <option value="$PROJECT_DIR$/tests/HelloWorld.php" />
-        <option value="$PROJECT_DIR$/tests/IndexController.php" />
-        <option value="$PROJECT_DIR$/src/Container.php" />
-      </list>
-    </option>
   </component>
   <component name="PhpWorkspaceProjectConfiguration">
     <include_path>
@@ -121,6 +102,7 @@
       <path value="$PROJECT_DIR$/vendor/sebastian/lines-of-code" />
     </include_path>
   </component>
+<<<<<<< HEAD
   <component name="ProjectFrameBounds" extendedState="6">
     <option name="x" value="1912" />
     <option name="y" value="-8" />
@@ -155,6 +137,13 @@
         </subPane>
       </pane>
     </panes>
+=======
+  <component name="ProjectId" id="2QCLVz8eJOBa8b861a2e5H2PP5K" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+    <option name="showMembers" value="true" />
+>>>>>>> cd53ca813632c99b560df4880140e2e54685cc46
   </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
@@ -162,18 +151,6 @@
     <property name="nodejs_interpreter_path.stuck_in_default_project" value="undefined stuck path" />
     <property name="nodejs_npm_path_reset_for_default_project" value="true" />
     <property name="settings.editor.selected.configurable" value="web-ide.project.structure" />
-  </component>
-  <component name="RunDashboard">
-    <option name="ruleStates">
-      <list>
-        <RuleState>
-          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
-        </RuleState>
-        <RuleState>
-          <option name="name" value="StatusDashboardGroupingRule" />
-        </RuleState>
-      </list>
-    </option>
   </component>
   <component name="RunManager">
     <configuration name="Test.php" type="JavascriptDebugType" temporary="true" nameIsGenerated="true" uri="http://localhost:63342/ext-container/Test.php" useBuiltInWebServerPort="true">
@@ -202,9 +179,12 @@
     </task>
     <servers />
   </component>
+<<<<<<< HEAD
   <component name="TimeTrackingManager">
     <option name="totallyTimeSpent" value="61547000" />
   </component>
+=======
+>>>>>>> cd53ca813632c99b560df4880140e2e54685cc46
   <component name="TodoView">
     <todo-panel id="selected-file">
       <is-autoscroll-to-source value="true" />
@@ -214,6 +194,7 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
+<<<<<<< HEAD
   <component name="ToolWindowManager">
     <frame x="1912" y="-8" width="1936" height="1056" extended-state="6" />
     <editor active="true" />
@@ -377,5 +358,9 @@
         </state>
       </provider>
     </entry>
+=======
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="2" />
+>>>>>>> cd53ca813632c99b560df4880140e2e54685cc46
   </component>
 </project>
