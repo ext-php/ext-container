@@ -19,6 +19,9 @@ use ReflectionParameter;
 class Container implements ContainerContract
 {
 
+    //application 静态实例
+    protected static $instance;
+
     //绑定的数组
     protected $bindings = [];
 
@@ -924,6 +927,25 @@ class Container implements ContainerContract
             }
         }
 
+
+    }
+
+    //获取静态实例
+    public static function getInstance()
+    {
+        if(!is_null(static::$instance))
+        {
+            static::$instance = new static;
+        }
+
+        return static::$instance;
+
+    }
+
+    //设置静态实例
+    public static function setInstance(ContainerContract $container = null)
+    {
+        return static::$instance = $container;
 
     }
 
